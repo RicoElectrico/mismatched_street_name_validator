@@ -1,4 +1,5 @@
 # Mismatched street names validator
+![screenshot](https://raw.githubusercontent.com/RicoElectrico/mismatched_street_name_validator/master/screenshot.png | width=1000)
 
 This is a validator for OpenStreetMap street data. It searches for streets that have a similar, but not identical name and lie close to each other (e.g. 200 m).
 For similarity purposes punctuation, letter case, and optionally stop words (like given names or person titles) are removed.
@@ -9,7 +10,7 @@ For example:
 * "Große Wolfstraße" and "Große-Wolf-Straße" -> "grossewolfstrasse"
 
 The tool exposes a link to edit all grouped street fragments in JOSM. Currently it's of no use for iD as it doesn't allow re-tagging of multiple objects at once.
-Optionally you can browse a result on a map (TODO: replace Mapbox font stack with free one, so you don't need a Mapbox accesstoken).
+Optionally you can browse a result on a map.
 
 ## Requirements
 You need a PostGIS database with OSM data imported by `osm2pgsql`. Currently to fetch the `note` tag as well as to exclude bus stops we use `hstore` for compatibility with `openstreetmap-carto.style`, but this can be changed of course.
