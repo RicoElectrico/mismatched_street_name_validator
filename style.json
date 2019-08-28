@@ -1,0 +1,35 @@
+{
+    "version": 8,
+	"glyphs": "mapbox://fonts/morgenkaffee/{fontstack}/{range}.pbf",
+    "sources": {
+		"osm_tiles": {
+			"type": "raster",
+			"maxzoom": 19,
+			"tiles": [
+				"http://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+				"http://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+				"http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+				]
+        }
+	},
+    "layers": [
+		{
+			"id": "darkness",
+			"type": "background",
+			"paint": {
+				"background-color": "#000000"
+				}
+		},
+
+		{
+			"id": "raster-tiles",
+			"type": "raster",
+			"source": "osm_tiles",
+			"paint": {
+				"raster-brightness-max": 0.25,
+				"raster-saturation": -1,
+				"raster-fade-duration": 100
+				}
+		}
+	]
+}

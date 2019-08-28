@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body {
+			font: 14px/22px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+		
+		
+		.gray-box {
+			background-color: #808080;
+			padding: 8px;
+			border-radius: 3px;
+		}
+			
+		.instructions {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			width: 320px;
+		}
+
+        .remote-control {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+			transform: translate(-50%, 0);
+        }
+		
+		.attribution {
+			position: absolute;
+			bottom: 0px;
+			right: 0px;
+			padding-right: 4px;
+			font-size: 12px;
+			color: #808080;
+		}
+	</style>
+</head>
+
+<body>
+    <div id='map'></div>
+    <script>
+        mapboxgl.accessToken = 'YOUR-MAPBOX-TOKEN-HERE';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: "style.json",
+            center: [19.433, 52.339], // Customize default position here
+            zoom: 6,
+            hash: true,
+            dragRotate: false,
+            pitchWithRotate: false
+        });
+
+        map.on('load', function() {
+			var nav = new mapboxgl.NavigationControl();
+			map.addControl(nav, 'top-right');
+			
+			var request = new XMLHttpRequest();
+			request.overrideMimeType("application/json");
+			request.open("GET","mismatched_street_names.geojson",false);
+			request.send();
+			data_json = JSON.parse(request.responseText);
+		
+            map.addSource("map_data", {
+                type: "geojson",
+                data: data_json
+            });
+					
+            map.addLayer({
+                "id": "roads",
+                "type": "line",
+                "source": "map_data",
+                "paint": {
+                    "line-color": "#ffff60",
+                    "line-width": 3
+                }
+            });
+			/*
+            map.addLayer({
+                "id": "points-glow",
+                "type": "circle",
+                "source": "map_data",
+                "paint": {
+                    "circle-color": "#ffff60",
+                    "circle-opacity": 0.15,
+                    "circle-radius": 8,
+                    "circle-blur": 1
+                }
+            });
+			*/
+            map.addLayer({
+                "id": "label",
+                "type": "symbol",
+                "source": "map_data",
+                "minzoom": 12,
+                "layout": {
+					"symbol-placement": "line",
+                    "text-field": "{name}",
+                    "text-size": 12,
+                    "text-anchor": "bottom",
+					"text-font": ["Open Sans Regular"]
+                },
+                "paint": {
+                    "text-color": "#ffff60",
+                }
+				
+			
+            });
+
+
+
+			
+            function replacer(key, value) {
+                if (value === "null") return undefined
+                return value
+            }
+
+            map.on('click', 'label', function(e) {
+                new mapboxgl.Popup()
+                    .setLngLat(e.features[0].geometry.coordinates)
+                    .setText(JSON.stringify(e.features[0].properties, replacer, 2))
+                    .addTo(map);
+					
+					var popups = document.getElementsByClassName("mapboxgl-popup");
+					for(var i = 0; i < popups.length; i++) {
+						popups.item(i).style.maxWidth = "50%";
+					}
+					
+            });
+
+            map.on('mouseenter', 'label', function() {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'label', function() {
+                map.getCanvas().style.cursor = '';
+            });
+			
+			countItems();
+
+
+        });
+		
+		function editMap() {
+			var bounds = map.getBounds();
+			var request = new XMLHttpRequest();
+			request.open("GET","http://localhost:8111/load_and_zoom?left="+bounds._sw.lng+"&right="+bounds._ne.lng+"&top="+bounds._ne.lat+"&bottom="+bounds._sw.lat);
+			request.send();
+		}
+		
+		function imFeelingLucky(){
+			var features = data_json.features;
+			var randomFeature = features[Math.floor(Math.random() * features.length)];
+			map.jumpTo({
+			center: [randomFeature.geometry.coordinates[0][0],randomFeature.geometry.coordinates[0][1]],
+			zoom: 17
+
+			});
+			
+		}
+		
+		function countItems(){
+			document.getElementById("items-counter").innerText=data_json.features.length + " obiektów";
+		}
+		
+    </script>
+	<!--
+	<div class="instructions gray-box">
+		<b>Mismatched street names</b><br/>
+		A map visualizing similarly but not identically named streets.<br\>
+		<br/><a href="http://www.openstreetmap.org/message/new/your_username_here">Contact</a>
+	
+	</div>
+	-->
+    <div class="remote-control gray-box">
+		<a href="javascript:editMap();">Edit in JOSM</a> · <a href="javascript:imFeelingLucky()">I'm feeling lucky</a> · <span id="items-counter">Loading...</span>
+	</div>
+	
+	<div class="attribution">&copy; OpenStreetMap contributors</div>
+
+</body>
+
+</html>

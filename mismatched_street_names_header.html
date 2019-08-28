@@ -1,0 +1,14 @@
+<html>
+<head>
+    <title>Mismatched street names</title>
+    <meta charset="UTF-8">
+<script>
+    function editObjects(idList) {
+    var request = new XMLHttpRequest();
+    request.open("GET","http://localhost:8111/load_object?referrers=true&objects="+idList);
+    request.send();
+}
+</script>
+</head>
+<body>
+<h1>Mismatched street names</h1>
