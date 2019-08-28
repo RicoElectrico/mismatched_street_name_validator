@@ -1,8 +1,8 @@
 # Mismatched street names validator
-![screenshot](https://raw.githubusercontent.com/RicoElectrico/mismatched_street_name_validator/master/screenshot.png | width=1000)
+<img src="https://raw.githubusercontent.com/RicoElectrico/mismatched_street_name_validator/master/screenshot.png" width="800">
 
 This is a validator for OpenStreetMap street data. It searches for streets that have a similar, but not identical name and lie close to each other (e.g. 200 m).
-For similarity purposes punctuation, letter case, and optionally stop words (like given names or person titles) are removed.
+For similarity purposes, punctuation, letter case, and optionally stop words (like given names or person titles) are removed.
 For example:  
 * "Adama Mickiewicza" and "Mickiewicza" ->  "mickiewicza"
 * "Łąkowa" and "Łakowa" ->  "lakowa" (catching the missing diacritic)
